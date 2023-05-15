@@ -14,8 +14,6 @@ type FormData = {
 };
 
 export const DishForm = () => {
-	const [name, setName] = useState('');
-	const [preparationTime, setPreparationTime] = useState('');
 	const [type, setType] = useState('');
 
 	const {
@@ -35,6 +33,8 @@ export const DishForm = () => {
 	};
 
 	const onSubmit = handleSubmit((data) => {
+		console.log(data);
+
 		console.log({
 			preparationTime: `${data.hour}:${data.minute}:${data.second}`,
 		});
@@ -46,23 +46,24 @@ export const DishForm = () => {
 				<label>Name</label>
 				<input
 					className='focus:outline-none rounded p-2 shadow-input text-xl'
+					type='text'
 					{...register('name', { required: true, maxLength: 30 })}
 				/>
 				<label>Preparation Time</label>
 				<div className='flex justify-between'>
 					<input
 						className='w-20 focus:outline-none rounded p-2 shadow-input text-center text-xl'
-						{...(register('hour'), { required: true })}
+						{...register('hour', { required: true })}
 					/>
 					<div className='text-4xl text-bold'>:</div>
 					<input
 						className='w-20 focus:outline-none rounded p-2 shadow-input text-center text-xl'
-						{...(register('minute'), { required: true, max: 59 })}
+						{...register('minute', { required: true, max: 59 })}
 					/>
 					<div className='text-4xl text-bold'>:</div>
 					<input
 						className='w-20 focus:outline-none rounded p-2 shadow-input text-center text-xl'
-						{...(register('second'), { required: true, max: 59 })}
+						{...register('second', { required: true, max: 59 })}
 					/>
 				</div>
 				<label>Type</label>
@@ -80,12 +81,12 @@ export const DishForm = () => {
 						<label className='mt-2'>Number of slices</label>
 						<input
 							className='focus:outline-none rounded p-2 shadow-input text-xl'
-							{...(register('numberOfSlices'), { required: true })}
+							{...register('numberOfSlices', { required: true })}
 						/>
 						<label className='mt-2'>Diameter</label>
 						<input
 							className='focus:outline-none rounded p-2 shadow-input text-xl'
-							{...(register('diameter'), { required: true })}
+							{...register('diameter', { required: true })}
 						/>
 					</div>
 				)}
@@ -94,7 +95,7 @@ export const DishForm = () => {
 						<label className='mt-2'>Spiciness scale</label>
 						<input
 							className='focus:outline-none rounded p-2 shadow-input text-xl'
-							{...(register('spicinessScale'), { required: true })}
+							{...register('spicinessScale', { required: true, min: 1, max: 10 })}
 						/>
 					</div>
 				)}
@@ -108,7 +109,7 @@ export const DishForm = () => {
 					</div>
 				)}
 				<button
-					className='text-xl bg-primary-green hover:bg-primary-green-hover duration-100 rounded p-2 mt-8'
+					className='text-xl bg-primary-green hover:-translate-y-2 shadow-input hover:bg-primary-green-hover duration-300 rounded p-2 mt-8'
 					type='submit'>
 					SetValue
 				</button>
