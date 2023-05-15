@@ -1,5 +1,6 @@
-import { useForm, Controller } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import axiosInstance from '../../config/axiosConfig';
 
 type FormData = {
 	name: string;
@@ -18,9 +19,7 @@ export const DishForm = () => {
 
 	const {
 		register,
-		setValue,
 		handleSubmit,
-		getValues,
 		formState: { errors },
 	} = useForm<FormData>({
 		defaultValues: {
@@ -33,11 +32,7 @@ export const DishForm = () => {
 	};
 
 	const onSubmit = handleSubmit((data) => {
-		console.log(data);
-
-		console.log({
-			preparationTime: `${data.hour}:${data.minute}:${data.second}`,
-		});
+		axiosInstance.post('/dishes', data);
 	});
 
 	return (
@@ -53,17 +48,17 @@ export const DishForm = () => {
 				<div className='flex justify-between'>
 					<input
 						className='w-20 focus:outline-none rounded p-2 shadow-input text-center text-xl'
-						{...register('hour', { required: true })}
+						{...register('hour', { required: true, maxLength: 3 })}
 					/>
 					<div className='text-4xl text-bold'>:</div>
 					<input
 						className='w-20 focus:outline-none rounded p-2 shadow-input text-center text-xl'
-						{...register('minute', { required: true, max: 59 })}
+						{...register('minute', { required: true, max: 59, maxLength: 2 })}
 					/>
 					<div className='text-4xl text-bold'>:</div>
 					<input
 						className='w-20 focus:outline-none rounded p-2 shadow-input text-center text-xl'
-						{...register('second', { required: true, max: 59 })}
+						{...register('second', { required: true, max: 59, maxLength: 2 })}
 					/>
 				</div>
 				<label>Type</label>
