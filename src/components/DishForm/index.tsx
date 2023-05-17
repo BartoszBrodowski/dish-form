@@ -79,7 +79,7 @@ export const DishForm = () => {
 						maxLength: { value: 30, message: 'Name cannot be longer than 30 characters' },
 					})}
 				/>
-				{errors.name && <p className='text-red-500 text-sm'>{errors.name.message}</p>}
+				{errors.name && <span className='text-red-500 text-sm'>{errors.name.message}</span>}
 				<label>Preparation Time</label>
 				<div className='flex justify-between'>
 					<input
@@ -121,19 +121,21 @@ export const DishForm = () => {
 						})}
 					/>
 				</div>
-				{errors.hours && <p className='text-red-500 text-sm'>{errors.hours.message}</p>}
-				{errors.minutes && <p className='text-red-500 text-sm'>{errors.minutes.message}</p>}
-				{errors.seconds && <p className='text-red-500 text-sm'>{errors.seconds.message}</p>}
+				{errors.hours && <span className='text-red-500 text-sm'>{errors.hours.message}</span>}
+				{errors.minutes && <span className='text-red-500 text-sm'>{errors.minutes.message}</span>}
+				{errors.seconds && <span className='text-red-500 text-sm'>{errors.seconds.message}</span>}
 				<label>Type</label>
 				<select
 					placeholder='Dish type'
 					className='focus:outline-none rounded p-2 shadow-input bg-white text-xl'
+					aria-invalid={errors.type ? 'true' : 'false'}
 					{...register('type', { required: 'Dish type is required' })}
 					onChange={handleTypeChange}>
 					<option value='pizza'>Pizza</option>
 					<option value='soup'>Soup</option>
 					<option value='sandwich'>Sandwich</option>
 				</select>
+				{errors.type && <span className='text-red-500 text-sm'>{errors.type.message}</span>}
 				{type === 'pizza' && (
 					<div className='flex flex-col'>
 						<label className='mt-2'>Number of slices</label>
@@ -146,6 +148,9 @@ export const DishForm = () => {
 								min: { value: 1, message: 'Must be at least 1 slice' },
 							})}
 						/>
+						{errors.numberOfSlices && (
+							<span className='text-red-500 text-sm'>{errors.numberOfSlices.message}</span>
+						)}
 						<label className='mt-2'>Diameter</label>
 						<input
 							className='focus:outline-none rounded p-2 shadow-input text-xl'
@@ -159,6 +164,9 @@ export const DishForm = () => {
 								},
 							})}
 						/>
+						{errors.diameter && (
+							<span className='text-red-500 text-sm'>{errors.diameter.message}</span>
+						)}
 					</div>
 				)}
 				{type === 'soup' && (
@@ -175,6 +183,9 @@ export const DishForm = () => {
 								maxLength: 1,
 							})}
 						/>
+						{errors.spicinessScale && (
+							<span className='text-red-500 text-sm'>{errors.spicinessScale.message}</span>
+						)}
 					</div>
 				)}
 				{type === 'sandwich' && (
@@ -186,6 +197,9 @@ export const DishForm = () => {
 							aria-invalid={errors.slicesOfBread ? 'true' : 'false'}
 							{...register('slicesOfBread', { required: 'Slices of bread is required' })}
 						/>
+						{errors.slicesOfBread && (
+							<span className='text-red-500 text-sm'>{errors.slicesOfBread.message}</span>
+						)}
 					</div>
 				)}
 				<button
