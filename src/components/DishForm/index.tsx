@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
-import { ErrorMessage } from '@hookform/error-message';
 import { useState } from 'react';
 import axiosInstance from '../../config/axiosConfig';
 import { ToastContainer, toast } from 'react-toastify';
+import { ClipLoader } from 'react-spinners';
 import 'react-toastify/dist/ReactToastify.css';
 
 type FormData = {
@@ -19,6 +19,7 @@ type FormData = {
 
 export const DishForm = () => {
 	const [type, setType] = useState('');
+	const [isLoading, setIsLoading] = useState(false);
 
 	const {
 		register,
@@ -35,7 +36,8 @@ export const DishForm = () => {
 		setType(e.target.value);
 	};
 
-	const onSubmit = handleSubmit(async (data) => {
+	const onSubmit = handleSubmit(async (data: FormData) => {
+		setIsLoading(true);
 		try {
 			const {
 				name,
@@ -58,15 +60,33 @@ export const DishForm = () => {
 				...(spicinessScale && { spiciness_scale: spicinessScale }),
 				...(slicesOfBread && { slices_of_bread: slicesOfBread }),
 			};
-			toast.promise(axiosInstance.post('/', dish), {
-				pending: 'Sending request...',
-				success: 'Dish added successfully!',
-				error: 'An error occurred while making the API request.',
-			});
+			await axiosInstance.post('/', dish);
 			reset();
+			setIsLoading(false);
 			setType('');
-		} catch (error) {
-			console.log(error);
+			toast.success('Dish added successfully!', {
+				position: 'top-right',
+				autoClose: 5000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: 'light',
+			});
+		} catch (error: any) {
+			const data = error.response.data;
+			console.log(data);
+			toast.error('An error occured while adding the dish. Please try again later', {
+				position: 'top-right',
+				autoClose: 5000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: 'light',
+			});
 		}
 	});
 
@@ -78,19 +98,21 @@ export const DishForm = () => {
 					className='focus:outline-none rounded p-2 shadow-input text-xl'
 					type='text'
 					aria-invalid={errors.name ? 'true' : 'false'}
+					aria-label='Name input'
 					{...register('name', {
 						required: 'Name is required',
-						minLength: { value: 5, message: 'Name must be at least 5 characters long' },
+						minLength: { value: 3, message: 'Name must be at least 3 characters long' },
 						maxLength: { value: 30, message: 'Name cannot be longer than 30 characters' },
 					})}
 				/>
 				{errors.name && <span className='text-red-500 text-sm'>{errors.name.message}</span>}
-				<label>Preparation Time</label>
+				<label>Preparation Time (Hours | Minutes | Seconds)</label>
 				<div className='flex flex-wrap gap-4 justify-between'>
 					<input
 						className='flex-auto w-full sm:w-1/2 md:w-1/3 lg:w-1/4 focus:outline-none rounded p-2 shadow-input text-center text-xl disable-number-styling'
 						type='number'
 						aria-invalid={errors.hours ? 'true' : 'false'}
+						aria-label='Hours input'
 						maxLength={2}
 						placeholder='Hours'
 						{...register('hours', {
@@ -104,6 +126,7 @@ export const DishForm = () => {
 						className='flex-auto w-full sm:w-1/2 md:w-1/3 lg:w-1/4 focus:outline-none rounded p-2 shadow-input text-center text-xl disable-number-styling'
 						type='number'
 						aria-invalid={errors.minutes ? 'true' : 'false'}
+						aria-label='Minutes input'
 						maxLength={2}
 						placeholder='Minutes'
 						{...register('minutes', {
@@ -117,6 +140,7 @@ export const DishForm = () => {
 						className='flex-auto w-full sm:w-1/2 md:w-1/3 lg:w-1/4 focus:outline-none rounded p-2 shadow-input text-center text-xl disable-number-styling'
 						type='number'
 						aria-invalid={errors.seconds ? 'true' : 'false'}
+						aria-label='Seconds input'
 						maxLength={2}
 						placeholder='Seconds'
 						{...register('seconds', {
@@ -135,11 +159,18 @@ export const DishForm = () => {
 					placeholder='Dish type'
 					className='focus:outline-none rounded p-2 shadow-input bg-white text-xl'
 					aria-invalid={errors.type ? 'true' : 'false'}
+					aria-label='Type select'
 					{...register('type', { required: 'Dish type is required' })}
 					onChange={handleTypeChange}>
-					<option value='pizza'>Pizza</option>
-					<option value='soup'>Soup</option>
-					<option value='sandwich'>Sandwich</option>
+					<option value='pizza' aria-label='Pizza option'>
+						Pizza
+					</option>
+					<option value='soup' aria-label='Soup option'>
+						Soup
+					</option>
+					<option value='sandwich' aria-label='Sandwich option'>
+						Sandwich
+					</option>
 				</select>
 				{errors.type && type == '' && (
 					<span className='text-red-500 text-sm'>{errors.type.message}</span>
@@ -151,6 +182,7 @@ export const DishForm = () => {
 							className='focus:outline-none rounded p-2 shadow-input text-xl disable-number-styling'
 							type='number'
 							aria-invalid={errors.numberOfSlices ? 'true' : 'false'}
+							aria-label='Number of slices input'
 							{...register('numberOfSlices', {
 								required: 'Number of slices is required',
 								min: { value: 1, message: 'Must be at least 1 slice' },
@@ -163,11 +195,12 @@ export const DishForm = () => {
 						<input
 							className='focus:outline-none rounded p-2 shadow-input text-xl'
 							aria-invalid={errors.diameter ? 'true' : 'false'}
+							aria-label='Diameter input'
 							{...register('diameter', {
 								required: 'Diameter is required',
 								pattern: {
 									value: /^\d+(\.\d{0,2})?$/,
-									message: 'Number should have exactly 2 decimal digits after the dot',
+									message: 'Input should be a number and have max 2 decimal points',
 								},
 							})}
 						/>
@@ -183,11 +216,13 @@ export const DishForm = () => {
 							className='focus:outline-none rounded p-2 shadow-input text-xl disable-number-styling'
 							type='number'
 							aria-invalid={errors.spicinessScale ? 'true' : 'false'}
+							aria-label='Spiciness scale input'
+							maxLength={2}
 							{...register('spicinessScale', {
 								required: 'Spiciness scale is required',
-								min: 1,
-								max: 10,
-								maxLength: 1,
+								min: { value: 1, message: 'Must be at least 1' },
+								max: { value: 10, message: 'Must be at most 10' },
+								maxLength: 2,
 							})}
 						/>
 						{errors.spicinessScale && (
@@ -202,6 +237,7 @@ export const DishForm = () => {
 							className='focus:outline-none rounded p-2 shadow-input text-xl disable-number-styling'
 							type='number'
 							aria-invalid={errors.slicesOfBread ? 'true' : 'false'}
+							aria-label='Slices of bread input'
 							{...register('slicesOfBread', { required: 'Slices of bread is required' })}
 						/>
 						{errors.slicesOfBread && (
@@ -210,9 +246,18 @@ export const DishForm = () => {
 					</div>
 				)}
 				<button
-					className='text-xl bg-primary-green hover:-translate-y-1 shadow-input hover:bg-primary-green-hover duration-300 rounded p-2 mt-8'
+					className='flex items-center gap-2 justify-center text-xl bg-primary-green hover:-translate-y-1 shadow-input hover:bg-primary-green-hover duration-300 rounded p-2 mt-8'
 					type='submit'>
-					SetValue
+					{isLoading && (
+						<ClipLoader
+							color={'#000000'}
+							loading={true}
+							size={20}
+							aria-label='Loading Spinner'
+							data-testid='loader'
+						/>
+					)}
+					Submit
 				</button>
 				<ToastContainer />
 			</form>

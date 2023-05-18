@@ -24,7 +24,7 @@ I was familiar with both of the libraries before making this project. After doin
 
 ## Why TailwindCSS?
 
-I am very familiar with TailwindCSS. I absolutely love the workflow that it allows. The predefined styles like colors and shadows as well as shortened styling names make it an easy choice. It is also very easy to customize and extend. It also uses PurgeCSS which deletes unused CSS styling when building the project, which makes the bundle size smaller.
+I am very familiar with TailwindCSS. I absolutely love the workflow that it allows. The predefined styles like colors and shadows as well as shortened styling names make it an easy choice. It is also very easy to customize and extend as well as to create responsive designs with it. It also uses PurgeCSS which deletes unused CSS styling when building the project, which makes the bundle size smaller.
 
 ## Why Vite?
 
@@ -54,4 +54,6 @@ This project uses [Vite](https://vitejs.dev/) to run. You can run it locally usi
 
 Node version: **18.15.0**
 
-Time spent on the project: **0h**
+NPM version: **8.5.0**
+
+Time spent on the project: **8-10h**
