@@ -2,6 +2,8 @@ import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { useState } from 'react';
 import axiosInstance from '../../config/axiosConfig';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 type FormData = {
 	name: string;
@@ -56,8 +58,11 @@ export const DishForm = () => {
 				...(spicinessScale && { spiciness_scale: spicinessScale }),
 				...(slicesOfBread && { slices_of_bread: slicesOfBread }),
 			};
-			console.log(dish);
-			await axiosInstance.post('/', dish);
+			toast.promise(axiosInstance.post('/', dish), {
+				pending: 'Sending request...',
+				success: 'Dish added successfully!',
+				error: 'An error occurred while making the API request.',
+			});
 			reset();
 			setType('');
 		} catch (error) {
@@ -66,7 +71,7 @@ export const DishForm = () => {
 	});
 
 	return (
-		<div className='bg-form-gray p-8 w-1/5 shadow-form rounded'>
+		<div className='bg-form-gray p-8 w-full md:w-3/5 lg:w-2/5 shadow-form rounded'>
 			<form onSubmit={onSubmit} className='flex flex-col [&>label]:mt-2'>
 				<label>Name</label>
 				<input
@@ -81,12 +86,13 @@ export const DishForm = () => {
 				/>
 				{errors.name && <span className='text-red-500 text-sm'>{errors.name.message}</span>}
 				<label>Preparation Time</label>
-				<div className='flex justify-between'>
+				<div className='flex flex-wrap gap-4 justify-between'>
 					<input
-						className='w-20 focus:outline-none rounded p-2 shadow-input text-center text-xl'
+						className='flex-auto w-full sm:w-1/2 md:w-1/3 lg:w-1/4 focus:outline-none rounded p-2 shadow-input text-center text-xl disable-number-styling'
 						type='number'
 						aria-invalid={errors.hours ? 'true' : 'false'}
 						maxLength={2}
+						placeholder='Hours'
 						{...register('hours', {
 							required: 'Hours is required',
 							min: { value: 0, message: 'Minumum value of hours is 0' },
@@ -94,12 +100,12 @@ export const DishForm = () => {
 							maxLength: 2,
 						})}
 					/>
-					<div className='text-4xl text-bold'>:</div>
 					<input
-						className='w-20 focus:outline-none rounded p-2 shadow-input text-center text-xl'
+						className='flex-auto w-full sm:w-1/2 md:w-1/3 lg:w-1/4 focus:outline-none rounded p-2 shadow-input text-center text-xl disable-number-styling'
 						type='number'
 						aria-invalid={errors.minutes ? 'true' : 'false'}
 						maxLength={2}
+						placeholder='Minutes'
 						{...register('minutes', {
 							required: 'Minutes is required',
 							min: { value: 0, message: 'Value cannot be less than 0' },
@@ -107,12 +113,12 @@ export const DishForm = () => {
 							maxLength: 2,
 						})}
 					/>
-					<div className='text-4xl text-bold'>:</div>
 					<input
-						className='w-20 focus:outline-none rounded p-2 shadow-input text-center text-xl'
+						className='flex-auto w-full sm:w-1/2 md:w-1/3 lg:w-1/4 focus:outline-none rounded p-2 shadow-input text-center text-xl disable-number-styling'
 						type='number'
 						aria-invalid={errors.seconds ? 'true' : 'false'}
 						maxLength={2}
+						placeholder='Seconds'
 						{...register('seconds', {
 							required: 'Seconds is required',
 							min: { value: 0, message: 'Value cannot be less than 0' },
@@ -135,12 +141,14 @@ export const DishForm = () => {
 					<option value='soup'>Soup</option>
 					<option value='sandwich'>Sandwich</option>
 				</select>
-				{errors.type && <span className='text-red-500 text-sm'>{errors.type.message}</span>}
+				{errors.type && type == '' && (
+					<span className='text-red-500 text-sm'>{errors.type.message}</span>
+				)}
 				{type === 'pizza' && (
 					<div className='flex flex-col'>
 						<label className='mt-2'>Number of slices</label>
 						<input
-							className='focus:outline-none rounded p-2 shadow-input text-xl'
+							className='focus:outline-none rounded p-2 shadow-input text-xl disable-number-styling'
 							type='number'
 							aria-invalid={errors.numberOfSlices ? 'true' : 'false'}
 							{...register('numberOfSlices', {
@@ -154,7 +162,6 @@ export const DishForm = () => {
 						<label className='mt-2'>Diameter</label>
 						<input
 							className='focus:outline-none rounded p-2 shadow-input text-xl'
-							type='number'
 							aria-invalid={errors.diameter ? 'true' : 'false'}
 							{...register('diameter', {
 								required: 'Diameter is required',
@@ -173,7 +180,7 @@ export const DishForm = () => {
 					<div className='flex flex-col'>
 						<label className='mt-2'>Spiciness scale</label>
 						<input
-							className='focus:outline-none rounded p-2 shadow-input text-xl'
+							className='focus:outline-none rounded p-2 shadow-input text-xl disable-number-styling'
 							type='number'
 							aria-invalid={errors.spicinessScale ? 'true' : 'false'}
 							{...register('spicinessScale', {
@@ -192,7 +199,7 @@ export const DishForm = () => {
 					<div className='flex flex-col'>
 						<label className='mt-2'>Slices of bread</label>
 						<input
-							className='focus:outline-none rounded p-2 shadow-input text-xl'
+							className='focus:outline-none rounded p-2 shadow-input text-xl disable-number-styling'
 							type='number'
 							aria-invalid={errors.slicesOfBread ? 'true' : 'false'}
 							{...register('slicesOfBread', { required: 'Slices of bread is required' })}
@@ -203,10 +210,11 @@ export const DishForm = () => {
 					</div>
 				)}
 				<button
-					className='text-xl bg-primary-green hover:-translate-y-2 shadow-input hover:bg-primary-green-hover duration-300 rounded p-2 mt-8'
+					className='text-xl bg-primary-green hover:-translate-y-1 shadow-input hover:bg-primary-green-hover duration-300 rounded p-2 mt-8'
 					type='submit'>
 					SetValue
 				</button>
+				<ToastContainer />
 			</form>
 		</div>
 	);
