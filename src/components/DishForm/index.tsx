@@ -64,29 +64,11 @@ export const DishForm = () => {
 			reset();
 			setIsLoading(false);
 			setType('');
-			toast.success('Dish added successfully!', {
-				position: 'top-right',
-				autoClose: 5000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-				theme: 'light',
-			});
+			toast.success('Dish added successfully!', {});
 		} catch (error: any) {
 			const data = error.response.data;
 			console.log(data);
-			toast.error('An error occured while adding the dish. Please try again later', {
-				position: 'top-right',
-				autoClose: 5000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-				theme: 'light',
-			});
+			toast.error('An error occured while adding the dish. Please try again later', {});
 		}
 	});
 
